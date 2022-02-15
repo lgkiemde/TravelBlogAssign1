@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
+
 from .models import *
 from .forms import *
 from django.shortcuts import redirect
@@ -8,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
 from django.core.paginator import Paginator, EmptyPage,\
                                   PageNotAnInteger
-
+from django.contrib.auth.views import PasswordChangeView, PasswordChangeForm
 
 now = timezone.now()
 
@@ -146,6 +148,21 @@ def signup(request):
     return render(request, 'journey/signup.html', {'user_form': user_form})
 
 
+def changepass(request):
+    if request.method == 'POST':
+        change_form = ChangePassForm(request.POST)
+        if change_form.is_valid():
+            change_form.save()
+            username = change_form.cleaned_data.get('username')
+            password = change_form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return redirect("journey:post_list")
+    else:
+        change_form = ChangePassForm()
+    return render(request, 'journey/signup.html', {'change_form': change_form})
+
+
 def travelblog_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     # List of active comments for this post
@@ -169,3 +186,4 @@ def travelblog_post(request, post_id):
     return render(request, 'journey/travelblog_post.html',
                   {'post': post, 'comments': comments,
                    'comment_form': comment_form})
+

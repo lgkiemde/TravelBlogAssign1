@@ -22,7 +22,7 @@ class CommentForm(forms.ModelForm):
         fields = ('body',)
 
 
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import User
 
 
@@ -34,3 +34,12 @@ class CreateUserAccountForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ('username', 'password1', 'password2', 'first_name', 'last_name', 'email')
+
+
+class ChangePassForm(PasswordChangeForm):
+    old_password = forms.CharField(max_length=50, help_text='Required')
+    new_password1 = forms.CharField(max_length=50, help_text='Required')
+    new_password2 = forms.CharField(max_length=50, help_text='Required')
+
+    class Meta:
+        fields = ('old_password', 'new_password1', 'new_password2')
